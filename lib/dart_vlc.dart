@@ -9,6 +9,7 @@
  */
 
 // ignore_for_file: implementation_imports
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -122,6 +123,14 @@ abstract class DartVLC {
         'dart_vlc',
       );
       FFI.DartVLC.initialize(libraryPath);
+    } else if (Platform.isAndroid) {
+      // final bitness = sizeOf<IntPtr>();
+      // final libraryPath = path.join(
+      //   path.dirname(Platform.resolvedExecutable),
+      //   'dart_vlc',
+      // );
+      FFI.DartVLC.initialize(
+          'libdart_vlc_core.a'); // armeabi-v7a arm64-v8a x86 x86_64
     }
   }
 }

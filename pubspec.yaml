@@ -32,4 +32,7 @@ flutter:
         pluginClass: DartVlcPlugin
       ios:
         pluginClass: DartVlcPlugin
+      android:
+        package: com.example.dart_vlc
+        pluginClass: DartVlcPlugin
 
