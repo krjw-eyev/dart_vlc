@@ -6,6 +6,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url "https://dl.bintray.com/videolan/Android"
+        }
     }
 
     dependencies {
@@ -18,6 +24,12 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url "https://dl.bintray.com/videolan/Android"
+        }
     }
 }
 
@@ -54,6 +66,11 @@ android {
             // Sets optional flags for the C++ compiler.
             // cppFlags "-fexceptions", "-frtti"
         //}
+        externalNativeBuild {
+            cmake {
+                targets "dart_vlc_core"
+            }
+        }
     }
 
     // Build and link libvlc
@@ -64,20 +81,72 @@ android {
         }
     }
 
-    buildFeatures {
-        prefab true
-        prefabPublishing true
-    }
+    // buildFeatures {
+    //     prefab true
+    //     prefabPublishing true
+    // }
 
-    prefab {
-        dart_vlc_core {
-            headers "../dartvlc"
-        }
-    }
+    // prefab {
+    //     dart_vlc_core {
+    //         headers "../dartvlc"
+    //     }
+    // }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    // implementation fileTree(dir: "libs", include: ["*.aar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.videolan.android:libvlc-all:3.3.14"
 }
+
+tasks.whenTaskAdded { theTask ->
+    if (theTask.name.contains('externalNativeBuildDebug')) {
+        theTask.doLast{
+            // copyNativeLibs
+            // copy {
+            //     from(new File(project(':dart_vlc').projectDir, '.cxx/cmake')) { include '**/*.a' }
+            //     into new File(buildDir, 'native-libs')
+            // }
+            // copy {
+            //     from("${buildDir}/outputs/aar/") {
+            //         include "*.aar"
+            //     }
+            //     into "${project(':dart_vlc').projectDir}/libs"
+            // }
+        }
+    }
+    // println theTask.name
+}
+
+// Copy *.so files from libs/ folder of your project to native-libs folder
+// Adjust if your native libraries are somewhere else..
+// task copyNativeLibs(type: Copy) {
+//     println buildDir
+//     println project(':dart_vlc').projectDir
+//     from(new File(project(':dart_vlc').projectDir, '.cxx')) { include '**/*.so' }
+//     into new File(buildDir, 'native-libs')
+// }
+
+// Whenever the code is compiled, also copy the native libs to the build folder
+// tasks.withType(Compile) { compileTask -> compileTask.dependsOn copyNativeLibs }
+
+// On "gradle clean" also reverse the copying of the native libraries
+// clean.dependsOn 'cleanCopyNativeLibs'
+
+// Include the native-libs folder into the final APK
+// tasks.withType(com.android.build.gradle.tasks.PackageApplication) { pkgTask ->
+//     pkgTask.jniDir new File(buildDir, 'native-libs')
+// }
+
+// task copyAAR(type: Copy) {
+//   from "$projectDir/build/dart_vlc/outputs/aar/"
+//   include '*.aar'
+//   into "$projectDir/libs/"
+//   rename '*.aar', "${packageName}.aar"
+//   doLast {
+//     new File("$projectDir/libs/build.gradle").text = """
+//       configurations.maybeCreate("default")
+//       artifacts.add("default", file('${packageName}.aar'))
+//       """
+//   }
+// }

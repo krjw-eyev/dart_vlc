@@ -58,10 +58,17 @@ if (NOT EXISTS "${LIBVLC_SOURCE}")
   )
 endif()
 
-add_library(${LIBRARY_NAME} STATIC
-  main.cc
-  api/api.cc
-)
+if (ANDROID)
+    add_library(${LIBRARY_NAME} SHARED
+    main.cc
+    api/api.cc
+    )
+else()
+    add_library(${LIBRARY_NAME} STATIC
+    main.cc
+    api/api.cc
+    )
+endif()
 
 add_dependencies(${LIBRARY_NAME} LIBVLC_EXTRACT)
 
@@ -111,6 +118,11 @@ elseif(LINUX)
   target_link_libraries(${LIBRARY_NAME} PRIVATE
     "vlc"
   )
+elseif(ANDROID)
+
+    target_link_libraries(${LIBRARY_NAME} PRIVATE
+        "vlc"
+    )
 endif()
 
 # If this is the top-level CMake project (e.g. on macOS where this is being run
